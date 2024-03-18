@@ -11,6 +11,9 @@ import SwiftUI
 
 struct AddView : View {
     
+    
+    @EnvironmentObject var listViewModel : ListViewModel
+    @Environment(\.presentationMode) var presentationMode
     @State var todoTitleState: String = ""
     
     
@@ -21,9 +24,7 @@ struct AddView : View {
                 
                 
                 Button (
-                    action: {
-                        
-                    }, label: {
+                    action: onSavePressed, label: {
                         Text("Save".uppercased())
                             .foregroundColor(.white)  .font(.headline)
                             .frame(height: 55).frame(maxWidth:  .infinity)
@@ -36,6 +37,11 @@ struct AddView : View {
             
         }.navigationTitle("Add Todo")
     }
+    
+    func onSavePressed() {
+        listViewModel.onAddItem(title: todoTitleState)
+        presentationMode.wrappedValue.dismiss()
+    }
 }
 
 
@@ -43,6 +49,6 @@ struct AddView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView{
             AddView()
-        }
+        }.environmentObject(ListViewModel())
     }
 }

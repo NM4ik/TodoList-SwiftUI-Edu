@@ -8,12 +8,18 @@
 import SwiftUI
 
 @main
-struct Todo_Edu_SwiftUIApp: App {
+struct TodoEduSwiftUIApp: App {
+    
+    @StateObject var listViewModel : ListViewModel = ListViewModel()
+    
+    
+    
     var body: some Scene {
         WindowGroup {
             NavigationView{
                 ListView()
             }
+            .environmentObject(listViewModel)
         }
     }
 }

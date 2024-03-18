@@ -10,19 +10,17 @@ import SwiftUI
 struct ListView : View {
     
     
-    @State var todos: [String] = [
-        "Go to Dune 2",
-        "Go to docter",
-        "Play Valorant Today",
-        "Cook eat",
-    ]
+    @EnvironmentObject var listViewModel : ListViewModel
     
+   
     
     var body : some View {
         List {
-            ForEach(todos, id: \.self) {
-                item in ListTile(title: item, isCompleted: true)
+            ForEach(listViewModel.items) {
+                item in ListTile(item: item)
             }
+            .onDelete(perform: listViewModel.onDeleteItem)
+            .onMove(perform: listViewModel.onMoveItem)
         }.navigationTitle("List of todos ✏️").toolbar(content: {
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink(destination: AddView()) {
@@ -32,12 +30,12 @@ struct ListView : View {
             
             
             ToolbarItem(placement: .navigationBarLeading) {
-                NavigationLink(destination: Text("Edit Todo")) {
-                    Text("Edit")
-                }
+                EditButton()
             }
         })
     }
+    
+    
 }
 
 
@@ -46,6 +44,7 @@ struct ListView_Previews: PreviewProvider {
         NavigationView{
             ListView()
         }
+        .environmentObject(ListViewModel())
     }
 }
 
