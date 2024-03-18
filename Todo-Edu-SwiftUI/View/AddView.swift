@@ -16,6 +16,9 @@ struct AddView : View {
     @Environment(\.presentationMode) var presentationMode
     @State var todoTitleState: String = ""
     
+    @State var alertTitle: String = ""
+    @State var showAlert: Bool = false
+    
     
     var body : some View {
         ScrollView{
@@ -35,12 +38,32 @@ struct AddView : View {
             
             
             
-        }.navigationTitle("Add Todo")
+        }
+        .navigationTitle("Add Todo")
+        .alert(isPresented: $showAlert, content: getAlert)
+    }
+    
+    func getAlert() -> Alert {
+        return Alert(title: Text(alertTitle))
     }
     
     func onSavePressed() {
-        listViewModel.onAddItem(title: todoTitleState)
-        presentationMode.wrappedValue.dismiss()
+        if textAppropriate() {
+            listViewModel.onAddItem(title: todoTitleState)
+            presentationMode.wrappedValue.dismiss()
+        }else {
+            alertTitle = "Wrong text!"
+            showAlert.toggle()
+        }
+        
+    }
+    
+    func textAppropriate() -> Bool {
+        if(todoTitleState.count < 3) {
+            return false
+        }
+        
+        return true
     }
 }
 

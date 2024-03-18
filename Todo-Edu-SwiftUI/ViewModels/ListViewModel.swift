@@ -9,7 +9,13 @@ import Foundation
 
 
 class ListViewModel : ObservableObject {
-    @Published var items : [TodoItemModel] = []
+    @Published var items : [TodoItemModel] = []  {
+        didSet {
+            saveItems()
+        }
+    }
+    
+    let storageKey : String = "todos"
     
     init() {
         getItems();
@@ -17,13 +23,12 @@ class ListViewModel : ObservableObject {
     
     
     func getItems() {
-        let newItems : [TodoItemModel] = [
-            TodoItemModel(title: "Do one valoGame", isCompleted: false, isDissmised: false),
-            TodoItemModel(title: "Sleep 7h", isCompleted: true, isDissmised: false),
-            TodoItemModel(title: "Go to work" , isCompleted: false, isDissmised: true),
-        ]
+        guard
+            let data = UserDefaults.standard.data(forKey: storageKey),
+                let savedItems = try? JSONDecoder().decode([TodoItemModel].self, from: data)
+        else {return}
         
-        items.append(contentsOf:  newItems)
+        self.items = savedItems
     }
     
     
@@ -37,5 +42,17 @@ class ListViewModel : ObservableObject {
     
     func onAddItem(title: String) {
         items.append(TodoItemModel(title: title, isCompleted: false, isDissmised:false))
+    }
+    
+    func updateItem(item: TodoItemModel) {
+        if  let index = items.firstIndex(where: { $0.id == item.id}) {
+            items[index] = item.updateComplete()
+        }
+    }
+    
+    func saveItems() {
+        if let encodedData = try? JSONEncoder().encode(items) {
+            UserDefaults.standard.set(encodedData, forKey: storageKey)
+        }
     }
 }
